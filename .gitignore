@@ -1,5 +1,4 @@
 # Environments
 .node_modules/
-.venv
-# idea
+.idea
 .dist/
