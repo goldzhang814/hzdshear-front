@@ -19,7 +19,7 @@
           <span v-if="tab.isNew" class="new-badge">New</span>
         </div>
       </div>
-
+<!--      https://shop.tiktok.com/alliance/creator/auth?app_key=-->
       <!-- Toolbar -->
       <div class="toolbar">
 <!--        <template v-if="activePlatform === 'tiktok'">

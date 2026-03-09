@@ -135,7 +135,7 @@ const stats = computed(() => {
     { icon: '👥', label: 'Total followers', value: d.total_fans.toLocaleString(), change: '+113 today', up: true },
     { icon: '❤️', label: 'Total likes', value: d.total_likes.toLocaleString(), change: '+723 today', up: true },
     { icon: '🎬', label: 'Total videos', value: d.total_videos, change: '+1 today', up: true },
-    { icon: '💬', label: 'Pending comments', value: d.pending_comments, change: '-2 resolved', up: false },
+/*    { icon: '💬', label: 'Pending comments', value: d.pending_comments, change: '-2 resolved', up: false },*/
   ]
 })
 

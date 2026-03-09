@@ -1,8 +1,8 @@
 <template>
-  <!-- Login/Landing page: no sidebar layout -->
-  <RouterView v-if="isLoginPage || isLandingPage"/>
+  <!-- Sign In页：无侧边栏布局 -->
+  <RouterView v-if="isLoginPage  || isLandingPage" />
 
-  <!-- Main app layout -->
+  <!-- 主应用布局 -->
   <div v-else class="app-layout">
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -15,9 +15,9 @@
       <nav class="sidebar-nav">
         <div v-for="item in navItems" :key="item.key">
           <div
-              class="nav-item"
-              :class="{ active: isNavActive(item), expanded: expandedKey === item.key }"
-              @click="handleNavClick(item)"
+            class="nav-item"
+            :class="{ active: isNavActive(item), expanded: expandedKey === item.key }"
+            @click="handleNavClick(item)"
           >
             <span class="nav-icon">{{ item.icon }}</span>
             <span class="nav-label">{{ item.label }}</span>
@@ -25,13 +25,12 @@
           </div>
           <div v-if="item.children && expandedKey === item.key" class="nav-children">
             <RouterLink
-                v-for="child in item.children"
-                :key="child.path"
-                :to="child.path"
-                class="nav-child"
-                :class="{ active: $route.path === child.path }"
-            >{{ child.label }}
-            </RouterLink>
+              v-for="child in item.children"
+              :key="child.path"
+              :to="child.path"
+              class="nav-child"
+              :class="{ active: $route.path === child.path }"
+            >{{ child.label }}</RouterLink>
           </div>
         </div>
       </nav>
@@ -47,9 +46,9 @@
           <span class="user-arrow">⋯</span>
         </div>
         <div v-if="showUserMenu" class="user-menu">
-          <div class="user-menu-item" @click="showUserMenu=false">Settings</div>
+          <div class="user-menu-item" @click="showUserMenu=false">⚙️ Profile Settings</div>
           <div class="user-menu-divider"></div>
-          <div class="user-menu-item danger" @click="handleLogout">Sign out</div>
+          <div class="user-menu-item danger" @click="handleLogout">🚪 Sign Out</div>
         </div>
       </div>
     </aside>
@@ -76,7 +75,7 @@
       <main class="content-area">
         <RouterView v-slot="{ Component }">
           <Transition name="fade" mode="out-in">
-            <component :is="Component"/>
+            <component :is="Component" />
           </Transition>
         </RouterView>
       </main>
@@ -93,15 +92,15 @@
 </template>
 
 <script setup>
-import {ref, computed, provide} from 'vue'
-import {useRouter, useRoute} from 'vue-router'
-import {useAuth} from '@/api/auth'
+import { ref, computed, provide } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuth } from '@/api/auth'
 
 const router = useRouter()
 const route = useRoute()
-const {user, isLoggedIn, logout} = useAuth()
+const { user, isLoggedIn, logout } = useAuth()
 
-const isLoginPage = computed(() => route.path === '/login')
+const isLoginPage = computed(() => route.meta.public === true)
 const isLandingPage = computed(() => route.path === '/')
 const expandedKey = ref('accounts')
 const showUserMenu = ref(false)
@@ -112,18 +111,19 @@ const userInitial = computed(() => {
 })
 
 const navItems = [
-  {key: 'dashboard', icon: '📊', label: 'Data Center', path: '/dashboard'},
+  { key: 'dashboard', icon: '📊', label: 'Dashboard', path: '/dashboard' },
   {
     key: 'accounts', icon: '👤', label: 'Account Management',
     children: [
-      {label: 'Account List', path: '/accounts'},
-      {label: 'Account Groups', path: '/accounts/groups'},
+      { label: 'Account List', path: '/accounts' },
+      { label: 'Account Groups', path: '/accounts/groups' },
     ]
   },
-  {key: 'videos', icon: '☁️', label: 'Cloud Video Library', path: '/videos'},
-  {key: 'publish', icon: '📋', label: 'Publish List', path: '/publish'},
+  { key: 'videos', icon: '☁️', label: 'Video Library', path: '/videos' },
+  { key: 'publish', icon: '📋', label: 'Publish List', path: '/publish' },
+  { key: 'shoppable',  icon: '🛍️', label: 'Shoppable Video',   path: '/shoppable' },
   /*  { key: 'comments', icon: '💬', label: 'Comment Management', path: '/comments' },*/
-  {key: 'resources', icon: '🗂️', label: 'Resource Management', path: '/resources'},
+  { key: 'resources', icon: '🗂️', label: 'Resources', path: '/resources' },
 ]
 
 const isNavActive = (item) => {
@@ -134,15 +134,13 @@ const isNavActive = (item) => {
 
 const handleNavClick = (item) => {
   showUserMenu.value = false
-  if (item.path) {
-    router.push(item.path);
-    return
-  }
+  if (item.path) { router.push(item.path); return }
   if (item.children) expandedKey.value = expandedKey.value === item.key ? null : item.key
 }
 
 const currentParent = computed(() => {
   if (route.path.startsWith('/accounts')) return 'Account Management'
+  if (route.path === '/shoppable') return 'Shoppable Video'
   return route.meta.title || ''
 })
 
@@ -164,341 +162,93 @@ const notification = ref(null)
 let notifTimer = null
 
 const showNotif = (msg, type = 'success') => {
-  notification.value = {msg, type}
+  notification.value = { msg, type }
   if (notifTimer) clearTimeout(notifTimer)
-  notifTimer = setTimeout(() => {
-    notification.value = null
-  }, 2800)
+  notifTimer = setTimeout(() => { notification.value = null }, 2800)
 }
 
 provide('showNotif', showNotif)
 </script>
 
 <style scoped>
-.app-layout {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
+.app-layout { display: flex; height: 100vh; overflow: hidden; }
 
 .sidebar {
-  width: var(--nav-width);
-  background: #fff;
+  width: var(--nav-width); background: #fff;
   border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
-  z-index: 10;
+  display: flex; flex-direction: column; flex-shrink: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.04); z-index: 10;
 }
 
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 18px 20px 12px;
-}
+.sidebar-logo { display: flex; align-items: center; gap: 8px; padding: 18px 20px 12px; }
+.logo-text { font-size: 20px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+.logo-badge { background: linear-gradient(135deg, #00BFA5, #0097A7); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.logo-bar { width: 40px; height: 3px; background: linear-gradient(90deg, var(--primary), #80DEEA); border-radius: 2px; margin: 0 20px 12px; }
 
-.logo-text {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--primary);
-  letter-spacing: -0.5px;
-}
-
-.logo-badge {
-  background: linear-gradient(135deg, #00BFA5, #0097A7);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.logo-bar {
-  width: 40px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary), #80DEEA);
-  border-radius: 2px;
-  margin: 0 20px 12px;
-}
-
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 4px 0;
-}
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 4px 0; }
 
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--text-secondary);
-  border-left: 3px solid transparent;
-  transition: all 0.15s;
-  user-select: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px; cursor: pointer; font-size: 14px;
+  color: var(--text-secondary); border-left: 3px solid transparent;
+  transition: all 0.15s; user-select: none;
 }
+.nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.nav-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+.nav-icon { font-size: 16px; }
+.nav-label { flex: 1; }
+.nav-arrow { font-size: 10px; opacity: 0.6; }
 
-.nav-item:hover {
-  background: var(--primary-light);
-  color: var(--primary);
-}
-
-.nav-item.active {
-  background: var(--primary-light);
-  color: var(--primary);
-  border-left-color: var(--primary);
-  font-weight: 600;
-}
-
-.nav-icon {
-  font-size: 16px;
-}
-
-.nav-label {
-  flex: 1;
-}
-
-.nav-arrow {
-  font-size: 10px;
-  opacity: 0.6;
-}
-
-.nav-children {
-  background: #fafcfd;
-}
-
+.nav-children { background: #fafcfd; }
 .nav-child {
-  display: block;
-  padding: 8px 18px 8px 46px;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: all 0.15s;
+  display: block; padding: 8px 18px 8px 46px;
+  font-size: 13px; color: var(--text-muted); text-decoration: none; transition: all 0.15s;
 }
+.nav-child:hover { color: var(--primary); background: var(--primary-light); }
+.nav-child.active { color: var(--primary); font-weight: 600; background: #edf8f6; }
 
-.nav-child:hover {
-  color: var(--primary);
-  background: var(--primary-light);
-}
-
-.nav-child.active {
-  color: var(--primary);
-  font-weight: 600;
-  background: #edf8f6;
-}
-
-.sidebar-footer {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border-light);
-  position: relative;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 6px 4px;
-  border-radius: var(--radius);
-  transition: background 0.15s;
-}
-
-.user-info:hover {
-  background: var(--bg);
-}
-
-.user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #0097A7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.user-meta {
-  flex: 1;
-  min-width: 0;
-}
-
-.user-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.user-role {
-  font-size: 11px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.user-arrow {
-  color: var(--text-muted);
-  font-size: 16px;
-  flex-shrink: 0;
-}
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border-light); position: relative; }
+.user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 4px; border-radius: var(--radius); transition: background 0.15s; }
+.user-info:hover { background: var(--bg); }
+.user-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #0097A7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.user-meta { flex: 1; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-arrow { color: var(--text-muted); font-size: 16px; flex-shrink: 0; }
 
 .user-menu {
-  position: absolute;
-  bottom: calc(100% - 8px);
-  left: 12px;
-  right: 12px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: var(--shadow-md);
-  padding: 6px;
-  z-index: 100;
+  position: absolute; bottom: calc(100% - 8px); left: 12px; right: 12px;
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow-md); padding: 6px; z-index: 100;
   animation: fadeIn 0.15s ease;
 }
+.user-menu-item { padding: 9px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--text-secondary); transition: background 0.1s; }
+.user-menu-item:hover { background: var(--bg); }
+.user-menu-item.danger { color: var(--danger); }
+.user-menu-item.danger:hover { background: #fff1f0; }
+.user-menu-divider { height: 1px; background: var(--border-light); margin: 4px 0; }
 
-.user-menu-item {
-  padding: 9px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-secondary);
-  transition: background 0.1s;
-}
-
-.user-menu-item:hover {
-  background: var(--bg);
-}
-
-.user-menu-item.danger {
-  color: var(--danger);
-}
-
-.user-menu-item.danger:hover {
-  background: #fff1f0;
-}
-
-.user-menu-divider {
-  height: 1px;
-  background: var(--border-light);
-  margin: 4px 0;
-}
-
-.main-wrap {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+.main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
 .topbar {
-  height: var(--topbar-height);
-  background: #fff;
+  height: var(--topbar-height); background: #fff;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  flex-shrink: 0;
-  justify-content: space-between;
+  display: flex; align-items: center; padding: 0 24px;
+  flex-shrink: 0; justify-content: space-between;
 }
+.breadcrumb { display: flex; align-items: center; gap: 8px; }
+.bc-parent { font-size: 13px; color: var(--text-muted); }
+.bc-sep { color: var(--border); }
+.bc-current { font-size: 13px; color: var(--text); font-weight: 600; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.notif-btn { position: relative; cursor: pointer; font-size: 18px; }
+.notif-badge { position: absolute; top: -4px; right: -6px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.topbar-divider { width: 1px; height: 20px; background: var(--border); }
+.topbar-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+.topbar-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #0097A7); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
 
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.content-area { flex: 1; overflow-y: auto; }
 
-.bc-parent {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.bc-sep {
-  color: var(--border);
-}
-
-.bc-current {
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 600;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.notif-btn {
-  position: relative;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.notif-badge {
-  position: absolute;
-  top: -4px;
-  right: -6px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.topbar-divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border);
-}
-
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.topbar-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #0097A7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.content-area {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
+.fade-enter-active, .fade-leave-active { transition: opacity 0.15s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

@@ -153,19 +153,6 @@ html, body, #app {
   width: 520px; max-width: 90vw; box-shadow: var(--shadow-md);
   animation: modalIn 0.2s ease;
 }
-/* Wide modal variant — used by Upload Video, Shoppable Publish etc. */
-.modal-box.modal-wide {
-  width: 680px; max-width: 95vw;
-}
-.modal-box.modal-upload {
-  width: 860px; max-width: 96vw;
-  padding: 0;                       /* upload modal owns its own internal padding */
-}
-.modal-box.modal-upload .modal-header {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border-light);
-  margin-bottom: 0;
-}
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-title { font-size: 16px; font-weight: 700; }
 .modal-close { border: none; background: var(--border-light); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
